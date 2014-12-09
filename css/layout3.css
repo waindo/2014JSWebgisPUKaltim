@@ -27,7 +27,15 @@ html, body {
   font-size:14pt;
   color:#FFFFFF;  
 }
-
+#judl {
+  position : absolute;
+  top: 20px;
+    right: 10px;
+  z-index: 999;
+  font-family: Franklin Gothic Medium;
+  font-size:24pt;
+  color:#FFFFFF;  
+}
 
 
 #HomeButton {
