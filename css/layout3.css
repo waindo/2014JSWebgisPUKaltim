@@ -1,0 +1,185 @@
+html, body {  
+    margin: 0; padding: 0;
+  height: 100%;
+  width: 100%;  
+  font-family: Arial;
+  font-size: 10pt;
+}
+.hidden {
+     display:none;
+}
+.esriScalebar{
+  padding: 20px 20px;
+  
+  }
+
+#logo{
+}
+
+#header {
+  font-family: Franklin Gothic Medium;
+  font-size:18pt;
+  color:#FFFFFF;
+}
+
+#subHeader {
+  font-family: Franklin Gothic Medium;
+  font-size:14pt;
+  color:#FFFFFF;  
+}
+
+
+
+#HomeButton {
+  position: absolute;
+    top: 280px;
+    right: 24px;
+  z-index: 50;
+}
+
+#rightPane {
+      width: 25%;
+    }
+
+    #legendPane {
+      border: solid #97DCF2 1px;
+    }
+
+#map {
+  height: 525px;
+}
+
+#basemapGalleryDiv {
+  width:240px; 
+  height:280px;
+}
+
+#scalebarDiv {
+  position: bottom;
+}
+
+#toggle {
+  position: absolute;
+  top: 0px;
+  widht: 210px;
+}
+
+#legendDiv {
+
+}
+
+#measurementDiv {
+  height: 130px;
+  width: 230px;
+  background-color: #FFFFFF;
+}
+
+#divTOC {
+  top: 0px;
+  height: 230px;
+  width: 250px;
+    overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+#divPine {
+  height: 130px;
+  width: 230px;     
+}
+#divPine2 {
+  height: 130px;
+  width: 230px;
+    overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+.ds { background: #000; overflow: hidden; position: absolute; z-index: 2; }
+#ds-h div { width: 100%; }
+#ds-l div { height: 100%; }
+#ds .o1 { filter: alpha(opacity=10); opacity: .1; }
+#ds .o2 { filter: alpha(opacity=8); opacity: .08; }
+#ds .o3 { filter: alpha(opacity=6); opacity: .06; }
+#ds .o4 { filter: alpha(opacity=4); opacity: .04; }
+#ds .o5 { filter: alpha(opacity=2); opacity: .02; }
+#ds .h1 { height: 1px; }
+#ds .h2 { height: 2px; }
+#ds .h3 { height: 3px; }
+#ds .h4 { height: 4px; }
+#ds .h5 { height: 5px; }
+
+#titlePane{
+        width:240px;
+        
+      }
+      .claro .dijitTitlePaneTitle {
+        font-weight:600;
+        border:solid 1px #29201A;
+        //border-radius:10px;
+      }
+      .claro .dijitTitlePaneTitleHover {
+      }
+      .claro .dijitTitlePaneTitleActive {
+      }
+      .claro .dijitTitlePaneContentOuter {
+        //border-radius:10px;
+        border-right: solid 2px #808775 !important;
+        border-bottom: solid 2px #808775 !important;
+        border-left: solid 2px #808775 !important;
+        
+      }
+    
+#scaleDiv .agsjsTOCOutOfScale {
+  display:none; 
+  }
+  
+  .zoominIcon {
+        background-image: url(../images/nav_zoomin.png);
+        width: 16px;
+        height: 16px;
+      }
+
+      .zoomoutIcon {
+        background-image: url(../images/nav_zoomout.png);
+        width: 16px;
+        height: 16px;
+      }
+
+      .zoomfullextIcon {
+        background-image: url(../images/nav_fullextent.png);
+        width: 16px;
+        height: 16px;
+      }
+
+      .zoomprevIcon {
+        background-image: url(../images/nav_previous.png);
+        width: 16px;
+        height: 16px;
+      }
+
+      .zoomnextIcon {
+        background-image: url(../images/nav_next.png);
+        width: 16px;
+        height: 16px;
+      }
+
+      .panIcon {
+        background-image: url(../images/nav_pan.png);
+        width: 16px;
+        height: 16px;
+      }
+
+      .deactivateIcon {
+        background-image: url(../images/nav_decline.png);
+        width: 16px;
+        height: 16px;
+      }
+      .identifyIcon {
+        background-image: url(../images/identify_icon.png);
+        width: 16px;
+        height: 16px;
+      }
+      .measureIcon {
+        background-image: url(../images/mea.png);
+        width: 16px;
+        height: 16px;
+      }

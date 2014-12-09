@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GEOSPASIAL</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <link rel="stylesheet" href="library/3.10/3.10/js/dojo/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="library/3.10/3.10/js/esri/css/esri.css">
+  <link rel="stylesheet" href="css/layout3.css">
+  <script type="text/javascript" src="library/3.10/3.10/init.js"></script>
+<script src="library/3.10/3.10/js/pukaltim.js"></script>
+ <script src="library/3.10/3.10/js/basemapgallery.js"></script> 
+ <script src="library/3.10/3.10/js/jquery.js"></script> 
+    <script type="text/javascript" language="JavaScript"><!--
+    function HideContent(d) {
+    document.getElementById(d).style.display = "none";
+    }
+    function ShowContent(d) {
+    document.getElementById(d).style.display = "block";
+    }
+    function ReverseDisplay(d) {
+    if(document.getElementById(d).style.display == "none") { document.getElementById(d).style.display = "block"; }
+    else { document.getElementById(d).style.display = "none"; }
+    }
+    </script>
+
+
+
+</head>
+<body class="claro" background="images/bg.jpg">
+  <div id="mainWindow" 
+         data-dojo-type="dijit/layout/BorderContainer" 
+         data-dojo-props="design:'headline', gutters:false" 
+         style="width:100%; height:100%;" bgcolor="#E6E6FA">
+         
+      <div id="header" class="shadow" 
+           data-dojo-type="dijit/layout/ContentPane" 
+           data-dojo-props="region:'top'">
+        <div id="logo"><img border="0" src="./images/logo2.png" width="55px" height="50px" align="left"></div>
+        <span>DINAS PEKERJAAN UMUM KALIMANTAN TIMUR</span><br />
+        <span id="subheader"  >Bidang Sumber Daya Air</span>  
+      </div>
+     
+      <div id="map"
+           data-dojo-type="dijit/layout/ContentPane" 
+           data-dojo-props="region:'center'">
+            <div id="navToolbar" data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top'">
+            <div data-dojo-type="dijit/form/Button" id="zoomin"  data-dojo-props="iconClass:'zoominIcon'"></div>
+            <div data-dojo-type="dijit/form/Button" id="zoomout" data-dojo-props="iconClass:'zoomoutIcon'"></div>
+            <div data-dojo-type="dijit/form/Button" id="zoomfullext" data-dojo-props="iconClass:'zoomfullextIcon'"></div>
+            <div data-dojo-type="dijit/form/Button" id="zoomprev" data-dojo-props="iconClass:'zoomprevIcon'"></div>
+            <div data-dojo-type="dijit/form/Button" id="zoomnext" data-dojo-props="iconClass:'zoomnextIcon'"></div>
+            <div data-dojo-type="dijit/form/Button" id="pan" data-dojo-props="iconClass:'panIcon'"></div>
+            <div data-dojo-type="dijit/form/Button" id="deactivate" data-dojo-props="iconClass:'deactivateIcon'"></div>
+            <div data-dojo-type="dijit/form/Button" id="identify" data-dojo-props="iconClass:'identifyIcon'"></div>
+            <a href="javascript:ReverseDisplay('myContent')"><img src="images/mea.png"></a>
+          </div>
+            
+            
+          <div dojoType="dijit.Tooltip" connectId="zoomin" 
+          label="zoom in">
+          </div>
+          <div dojoType="dijit.Tooltip" connectId="zoomout" 
+          label="zoom out">
+          </div>
+          <div dojoType="dijit.Tooltip" connectId="zoomfullext" 
+          label="full extent">
+          </div>
+          <div dojoType="dijit.Tooltip" connectId="zoomprev" 
+          label="prev extent">
+          </div>
+          <div dojoType="dijit.Tooltip" connectId="zoomnext" 
+          label="next extent">
+          </div>
+          <div dojoType="dijit.Tooltip" connectId="pan" 
+          label="pan">
+          </div>
+          <div dojoType="dijit.Tooltip" connectId="deactivate" 
+          label="deactivate">
+          </div>
+
+      
+          
+           <div style="position:absolute; right:20px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'Basemap', closable:true, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="basemapGallery"></div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute; right:115px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'IGD', closable:false, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="tocDiv"></div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute; right:175px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'Peta Tematik Fisik', closable:false, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="tocDiv2"></div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute; right:328px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'Citra Satelit', closable:false, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="tocDiv6"></div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute; right:440px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'Prasarana SDA', closable:false, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="tocDiv3"></div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute; right:573px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'Data Hidrologi', closable:false, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="tocDiv4"></div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute; right:701px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'Neraca Air', closable:false, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="tocDiv5"></div>
+                </div>
+              </div>
+            </div>
+            <div style="position:absolute; right:805px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'Peringatan Dini Banjir', closable:false, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="tocDiv7"></div>
+                </div>
+              </div>
+            </div>
+            <div id="myContent" style="display:none;position:absolute; left:130px; top:40px; z-Index:999;">
+                
+             <div id="measurementDiv" ></div>
+          
+        </div>
+            <div style="position:absolute; left:20px; top:40px; z-Index:999;">
+              <div data-dojo-type="dijit/TitlePane" 
+                   data-dojo-props="title:'Legenda', closable:false, open:false">
+                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+                  <div id="legendDiv"></div>
+                </div>
+              </div>
+            </div>
+      </div>
+     <!-- <div id="rightPane"
+       data-dojo-type="dijit/layout/ContentPane"
+       data-dojo-props="region:'right'">
+
+        <div data-dojo-type="dijit/layout/AccordionContainer">
+          <div data-dojo-type="dijit/layout/ContentPane" id="legendPane"
+               data-dojo-props="title:'Legend', selected:true">
+            <div id="legendDiv"></div>
+          </div>
+          <div data-dojo-type="dijit/layout/ContentPane"
+               data-dojo-props="title:'TOC'">
+            <div id="tocDiv"></div>
+          </div>
+        </div>
+      </div>-->
+
+
+
+
+
+    </div>
+
+</body>
+</html>
