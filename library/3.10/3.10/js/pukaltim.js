@@ -7,14 +7,19 @@
         "esri/urlUtils",
         "esri/arcgis/utils",
 
+
         "esri/dijit/Measurement",
         "esri/dijit/Legend",
         "esri/dijit/Popup",
         "esri/dijit/PopupTemplate",
         "esri/dijit/Scalebar",
         "esri/dijit/BasemapGallery",
+        "esri/dijit/OverviewMap",
+
+        "esri/geometry/webMercatorUtils",
 
         "esri/layers/ArcGISTiledMapServiceLayer",
+        "esri/layers/ArcGISDynamicMapServiceLayer",
         "esri/layers/FeatureLayer",
         "esri/layers/ImageParameters",
 
@@ -47,12 +52,15 @@
         "dijit/TitlePane",
 
         "dojo/dom",
+        
+        
         "dojo/keys",
         "dojo/domReady!"
 
 			 ], function(esriConfig, Map,SnappingManager, urlUtils, utils,
-        Measurement, Legend, Popup, PopupTemplate, Scalebar,BasemapGallery,
-        ArcGISTiledMapServiceLayer, FeatureLayer,ImageParameters,
+        Measurement, Legend, Popup, PopupTemplate, Scalebar,BasemapGallery,OverviewMap,
+        webMercatorUtils,
+        ArcGISTiledMapServiceLayer,ArcGISDynamicMapServiceLayer, FeatureLayer,ImageParameters,
         SimpleRenderer, 
         SimpleMarkerSymbol,SimpleLineSymbol,SimpleFillSymbol, 
         GeometryService,
@@ -65,7 +73,7 @@
         parser.parse();
 
 				  map = new Map("map", {
-					center: [115, 0],
+					center: [115, 2],
 					zoom: 3,
           sliderPosition: "top-right",
           sliderStyle: "large"
@@ -73,6 +81,16 @@
           var customBasemap = new ArcGISTiledMapServiceLayer(
           "http://geoservices.big.go.id/arcgis/rest/services/RBI/Rupabumi/MapServer");
           map.addLayer(customBasemap);
+
+          //overview map
+          var overviewMapDijit = new OverviewMap({
+          map: map,
+          visible: true
+          },dojo.byId("overviewDiv"));
+          overviewMapDijit.startup();
+
+
+          
 
           //measurement
           var sfs = new SimpleFillSymbol(
@@ -218,11 +236,11 @@
             });
 
           //Citra
-           /* var citra = new FeatureLayer("http://36.83.3.83:6080/arcgis/rest/services/view/CitraSamboja2012/MapServer/0",
-          {
-              mode: FeatureLayer.MODE_ONDEMAND,
-              visible : false
-            });*/
+           var citra = new ArcGISDynamicMapServiceLayer("http://36.83.3.83:6080/arcgis/rest/services/view/CitraSamboja2012/MapServer", {
+          visible : false
+          
+            });
+
 
           //Layer BHGK
           var bendungan = new FeatureLayer("http://36.83.3.83:6080/arcgis/rest/services/view/BHGK/MapServer/2",
@@ -359,12 +377,26 @@
               outFields: ["*"]
             });
           map.addLayers([admin,
-                         
+                         citra,
                          elevasi,sawah,ttp,jt,ws,cat,geo,
                          bendungan, bendung, bendali, pantai, irigasi, rawa, danau,
                          posarr,poshidro,
                          debit,chdas,
                          banjir, genanganbpn, genanganbtg, genangansmrd, poibpn, poibtg, poismrd]);
+
+          map.on("load", function() {
+          //after map loads, connect to listen to mouse move & drag events
+          map.on("mouse-move", showCoordinates);
+          map.on("mouse-drag", showCoordinates);
+            });
+
+            function showCoordinates(evt) {
+              //the map is in web mercator but display coordinates in geographic (lat, long)
+              var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+              //display mouse coordinates
+              dom.byId("info").innerHTML = mp.x.toFixed(3) + ", " + mp.y.toFixed(3);
+            }
+
            map.on("layers-add-result", function (evt) {
             var layerInfo = arrayUtils.map(evt.layers, function (layer, index) {
               return {layer:layer.layer, title:layer.layer.name};
@@ -524,13 +556,14 @@
                     }
                   }
                   });
-                /* //TOC CItra
-           var toc4 = new TOC({
+                 //TOC CItra
+           var toc6 = new TOC({
                     map: map,
                     layerInfos: [{
                       layer: citra,
                       title: "Citra Samboja 2012"
-                    }]
+                    }],style: 'inline',
+                    slider: true
                   }, 'tocDiv6');
                   toc.startup();
                      
@@ -545,9 +578,9 @@
                       // evt.rootLayer.setVisibleLayers([evt.serviceLayer.id])
                     }
                   }
-                  });*/
+                  });
                    //TOC Banjir
-           var toc4 = new TOC({
+           var toc7 = new TOC({
                     map: map,
                     layerInfos: [{
                       layer: banjir,
@@ -626,7 +659,7 @@
             measurement.startup();
           });
          
-
+        
 
           //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
           /*var basemapGallery = new BasemapGallery({
