@@ -17,25 +17,29 @@ html, body {
 }
 
 #header {
+  
   font-family: Franklin Gothic Medium;
-  font-size:18pt;
+  font-size:16pt;
   color:#FFFFFF;
 }
 
 #subHeader {
   font-family: Franklin Gothic Medium;
-  font-size:14pt;
-  color:#FFFFFF;  
+  font-size:10pt;
+  color:#FFFFFF; 
+
 }
 #judl {
   position : absolute;
-  top: 20px;
+  top: 30px;
     right: 10px;
   z-index: 999;
   font-family: Franklin Gothic Medium;
-  font-size:24pt;
+  font-size:20pt;
   color:#FFFFFF;  
 }
+
+
 
 
 #HomeButton {
@@ -65,19 +69,26 @@ html, body {
 #scalebarDiv {
   position: bottom;
 }
-
+#search {
+  position:absolute; left:1131px; top:8px;
+}
 #toggle {
   position: absolute;
   top: 0px;
-  widht: 210px;
+  width: 210px;
 }
 
-#legendDiv {
+#legendDiv {height: 230px;
+  width: 250px;
+    overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
 
 }
+
 
 #measurementDiv {
-  height: 130px;
+  height: 180px;
   width: 230px;
   background-color: #FFFFFF;
 }
@@ -188,6 +199,21 @@ html, body {
       }
       .measureIcon {
         background-image: url(../images/mea.png);
+        width: 16px;
+        height: 16px;
+      }
+      .printIcon {
+        background-image: url(../images/printButton.png);
+        width: 16px;
+        height: 16px;
+      }
+      .legendIcon {
+        background-image: url(../images/legenda.png);
+        width: 16px;
+        height: 16px;
+      }
+      .addIcon {
+        background-image: url(../images/addmap.png);
         width: 16px;
         height: 16px;
       }

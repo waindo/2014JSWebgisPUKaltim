@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="css/layout3.css">
   <script type="text/javascript" src="library/3.10/3.10/init.js"></script>
 <script src="library/3.10/3.10/js/pukaltim.js"></script>
- <script src="library/3.10/3.10/js/basemapgallery.js"></script> 
+ <!--script src="library/3.10/3.10/js/basemapgallery.js"></script--> 
  <script src="library/3.10/3.10/js/jquery.js"></script> 
-    <script type="text/javascript" language="JavaScript"><!--
+    <script type="text/javascript" language="JavaScript">
     function HideContent(d) {
     document.getElementById(d).style.display = "none";
     }
@@ -23,7 +23,17 @@
     else { document.getElementById(d).style.display = "none"; }
     }
     </script>
-
+    <script>
+    // Enter point x,y
+         function addPointToMap(lon, lat) {
+        map.graphics.add(
+          new esri.Graphic(
+            new esri.geometry.Point(lon, lat, map.spatialReference),
+              new esri.symbol.SimpleMarkerSymbol().setColor(new dojo.Color([255,0,0,0.5]))
+            )
+          )
+        }
+      </script>
 
 
 </head>
@@ -33,19 +43,20 @@
          data-dojo-props="design:'headline', gutters:false" 
          style="width:100%; height:100%;" bgcolor="#E6E6FA">
          
-      <div id="header" class="shadow" 
+      <div id="header" class="shadow"  
            data-dojo-type="dijit/layout/ContentPane" 
            data-dojo-props="region:'top'" onclick="location.href='http://sda.pu.kaltimprov.go.id'">
-        <div id="logo"><img border="0" src="./images/logo2.png" width="55px" height="50px" align="left"></div>
-        <span>DINAS PEKERJAAN UMUM KALIMANTAN TIMUR</a></span><br />
-        <span id="subheader"  >Bidang Sumber Daya Air</span>  <br />
+        <div id="logo"  ><img border="0" src="./images/logo2.png" width="55px" height="50px" align="left"></div>
+        <span>DINAS PEKERJAAN UMUM </a></span><br />
+        <span>PROVINSI KALIMANTAN TIMUR </a></span><br />
+        <span id="subheader" style="position:absolute; left:63px;" >Bidang Sumber Daya Air</span>  <br />
         <span id="judl"  >GEOSPASIAL</span> 
       </div>
      
       <div id="map"
            data-dojo-type="dijit/layout/ContentPane" 
            data-dojo-props="region:'center'">
-           <span id="info" style="position:absolute; left:15px; bottom:5px; color:#000; z-index:50;"></span>
+           <span id="info" style="position:absolute; left:15px; bottom:5px; color:#FFFFF; z-index:50;"></span>
 
             <div id="navToolbar" data-dojo-type="dijit/Toolbar" data-dojo-props="region:'top'">
             <div data-dojo-type="dijit/form/Button" id="zoomin"  data-dojo-props="iconClass:'zoominIcon'"></div>
@@ -56,10 +67,13 @@
             <div data-dojo-type="dijit/form/Button" id="pan" data-dojo-props="iconClass:'panIcon'"></div>
             <div data-dojo-type="dijit/form/Button" id="deactivate" data-dojo-props="iconClass:'deactivateIcon'"></div>
             <div data-dojo-type="dijit/form/Button" id="identify" data-dojo-props="iconClass:'identifyIcon'"></div>
-            <a href="javascript:ReverseDisplay('myContent')"><img src="images/mea.png"></a>
-          </div>
-            
-            
+            <a id= "ukur" href="javascript:ReverseDisplay('myContent')" style="position:absolute; left:300px ;top:16px"><img src="images/mea.png"></a>
+            <a id="cetak" href="javascript:ReverseDisplay('print')" style="position:absolute; left:330px ;top:16px"><img src="images/printButton.png"></a>
+            <a id="service" href="javascript:ReverseDisplay('servis')" style="position:absolute; left:360px ;top:16px"><img src="images/addmap.png"></a>
+            <a id="titik" href="javascript:ReverseDisplay('xy')" style="position:absolute; left:380px ;top:12px"><img src="images/xy.png"></a>
+            <div id="search" ></div>
+            </div>
+
           <div dojoType="dijit.Tooltip" connectId="zoomin" 
           label="zoom in">
           </div>
@@ -81,92 +95,121 @@
           <div dojoType="dijit.Tooltip" connectId="deactivate" 
           label="deactivate">
           </div>
+          <div dojoType="dijit.Tooltip" connectId="identify" 
+          label="identify">
+          </div>
+          <div dojoType="dijit.Tooltip" connectId="ukur" 
+          label="Pengukuran">
+          </div>
+          <div dojoType="dijit.Tooltip" connectId="cetak" 
+          label="Cetak Peta">
+          </div>
+           <div dojoType="dijit.Tooltip" connectId="service" 
+          label="Tambah Web Service">
+          </div>
 
-      
-          
-           <div style="position:absolute; right:20px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'Basemap', closable:true, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
-                  <div id="basemapGallery"></div>
-                </div>
-              </div>
-            </div>
-            <div style="position:absolute; right:115px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'IGD', closable:false, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
-                  <div id="tocDiv"></div>
-                </div>
-              </div>
-            </div>
-            <div style="position:absolute; right:175px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'Peta Tematik Fisik', closable:false, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
-                  <div id="tocDiv2"></div>
-                </div>
-              </div>
-            </div>
-            <div style="position:absolute; right:328px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'Citra Satelit', closable:false, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
-                  <div id="tocDiv6"></div>
-                </div>
-              </div>
-            </div>
-            <div style="position:absolute; right:440px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'Prasarana SDA', closable:false, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
-                  <div id="tocDiv3"></div>
-                </div>
-              </div>
-            </div>
-            <div style="position:absolute; right:573px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'Data Hidrologi', closable:false, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
-                  <div id="tocDiv4"></div>
-                </div>
-              </div>
-            </div>
-            <div style="position:absolute; right:701px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'Neraca Air', closable:false, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
-                  <div id="tocDiv5"></div>
-                </div>
-              </div>
-            </div>
-            <div style="position:absolute; right:805px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'Peringatan Dini Banjir', closable:false, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+          <div id="ovWin" class="shadow" style="position:absolute; right:30px; bottom:20px; z-Index:998; width:250px;height:200px;" >
+            <div id="overviewDiv" style="width:100%;height:100%;" region="center"></div>
+          </div>
+
+
+
+         
+
+
+            <div style="position:absolute; right:764px; top:40px; z-Index:999;">
+              <button id="dropdownButton" iconClass="" label="Peringatan Dini Banjir"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:250px; height:280px; overflow:auto;">
                   <div id="tocDiv7"></div>
                 </div>
               </div>
-            </div>
+
+            <div style="position:absolute; right:664px; top:40px; z-Index:999;">
+              <button id="dropdownButton2" iconClass="" label="Neraca Air"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:200px; height:280px; overflow:auto;">
+                  <div id="tocDiv5"></div>
+                </div>
+              </div>
+        
+            <div style="position:absolute; right:545px; top:40px; z-Index:999;">
+              <button id="dropdownButton3" iconClass="" label="Data Hidrologi"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:200px; height:280px; overflow:auto;">
+                  <div id="tocDiv4"></div>
+                </div>
+              </div>
+         
+            <div style="position:absolute; right:417px; top:40px; z-Index:999;">
+             <button id="dropdownButton4" iconClass="" label="Prasarana SDA"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:200px; height:280px; overflow:auto;">
+                  <div id="tocDiv3"></div>
+                </div>
+              </div>
+           
+            <div style="position:absolute; right:321px; top:40px; z-Index:999;">
+              <button id="dropdownButton5" iconClass="" label="Peta Citra"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:200px; height:280px; overflow:auto;">
+                  <div id="tocDiv6"></div>
+                </div>
+              </div>
+           
+            <div style="position:absolute; right:175px; top:40px; z-Index:999;">
+              <button id="dropdownButton6" iconClass="" label="Peta Tematik Fisik"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:200px; height:280px; overflow:auto;">
+                  <div id="tocDiv2"></div>
+                </div>
+              </div>
+           
+            <div style="position:absolute; right:115px; top:40px; z-Index:999;">
+              <button id="dropdownButton7" iconClass="" label="IGD"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:200px; height:280px; overflow:auto;">
+                  <div id="tocDiv"></div>
+                </div>
+              </div>
+           
+            <div style="position:absolute; right:20px; top:40px; z-Index:999;">
+              <button id="dropdownButton8" iconClass="" label="Basemap"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:200px; height:280px; overflow:auto;">
+                  <div id="basemapGallery"></div>
+                </div>
+              </div>
+           
             <div id="myContent" style="display:none;position:absolute; left:130px; top:40px; z-Index:999;">
-                
              <div id="measurementDiv" ></div>
              <span style="font-size:smaller;padding:5px 5px;">Press <b>CTRL</b> to enable snapping.</span>
-          
         </div>
+        <div id="print" style="display:none;position:absolute; left:300px; top:30px; z-Index:999;">  
+             <div id="printButton" ></div>
+        </div>
+        <div id="servis" style="display:none;position:absolute; left:150px; top:40px; z-Index:999;">  
+             <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:260px; height:280px; overflow:auto;">
+              <span style="font-size:larger;padding:5px 5px;"><b>Daftar Layer</b></span>
+              <hr width="100%">
+                  <div id="tocDiv8"></div>
+                </div>
+        </div>
+        <div id="xy" style="display:none;position:absolute; left:200px; top:40px; z-Index:999;">  
+             <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA;width:170px; height:90px; overflow:auto;">
+              <span>X : <input type="text" id="lon" value="0" />
+            Y : <input type="text" id="lat" value="0" />
+            <button onclick="var point = addPointToMap(parseFloat(dojo.byId('lon').value), parseFloat(dojo.byId('lat').value));map.centerAndZoom(point,8);">Tambahkan Ke Peta</button></span>
+            </div>
+
+                
+        </div>
+        
+
+
             <div style="position:absolute; left:20px; top:40px; z-Index:999;">
-              <div data-dojo-type="dijit/TitlePane" 
-                   data-dojo-props="title:'Legenda', closable:false, open:false">
-                <div data-dojo-type="dijit/layout/ContentPane" style="width:180px; height:280px; overflow:auto;">
+              <button id="dropdownButton9" iconClass="" label="Legenda"  dojoType="dijit.form.DropDownButton">
+                <div data-dojo-type="dijit/layout/ContentPane" style="background-color: #F7FBFA; width:180px; height:280px; overflow:auto;">
                   <div id="legendDiv"></div>
                 </div>
               </div>
-            </div>
+           
+            
       </div>
 
-      <div id="ovWin" class="shadow" style="position:absolute; right:30px; bottom:20px; z-Index:998; width:250px;height:200px; ">
-            <div id="overviewDiv" style="width:100%;height:100%;"></div>
-          </div>
+      
 
      <!-- <div id="rightPane"
        data-dojo-type="dijit/layout/ContentPane"

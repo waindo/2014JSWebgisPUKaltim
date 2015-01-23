@@ -1,13 +1,22 @@
 
     var map;
     require([
+        "dojo/keys",  
+        "dojo/dom",
+        "dojo/dom-construct",
+        "dojo/on",
+        "dojo/parser",
+        "dojo/_base/array",
+
 			 "esri/config",
+        "esri/sniff",
         "esri/map",
+        "esri/InfoTemplate",
         "esri/SnappingManager",
         "esri/urlUtils",
         "esri/arcgis/utils",
 
-
+        "esri/dijit/Geocoder",
         "esri/dijit/Measurement",
         "esri/dijit/Legend",
         "esri/dijit/Popup",
@@ -15,6 +24,7 @@
         "esri/dijit/Scalebar",
         "esri/dijit/BasemapGallery",
         "esri/dijit/OverviewMap",
+        "esri/dijit/Print",
 
         "esri/geometry/webMercatorUtils",
 
@@ -25,18 +35,20 @@
 
         "esri/renderers/SimpleRenderer",
 
+        "esri/tasks/IdentifyTask",
+        "esri/tasks/IdentifyParameters",
+        "esri/tasks/GeometryService",
+        "esri/tasks/PrintTemplate",
+
         "esri/symbols/SimpleMarkerSymbol",
         "esri/symbols/SimpleLineSymbol",
         "esri/symbols/SimpleFillSymbol",
 
-        "esri/tasks/GeometryService",
+        
 
         "esri/toolbars/navigation",
 
-        "dojo/dom-construct",
-        "dojo/on",
-        "dojo/parser",
-        "dojo/_base/array",
+        
         
         "esri/Color",
 
@@ -51,36 +63,68 @@
         "dijit/layout/AccordionContainer",
         "dijit/TitlePane",
 
-        "dojo/dom",
         
         
-        "dojo/keys",
         "dojo/domReady!"
 
-			 ], function(esriConfig, Map,SnappingManager, urlUtils, utils,
-        Measurement, Legend, Popup, PopupTemplate, Scalebar,BasemapGallery,OverviewMap,
+			 ], function(
+        keys,dom,domConstruct,on,parser,arrayUtils,
+        esriConfig,has, Map,InfoTemplate,SnappingManager, urlUtils, utils,
+        Geocoder,Measurement, Legend, Popup, PopupTemplate, Scalebar,BasemapGallery,OverviewMap,Print,
         webMercatorUtils,
         ArcGISTiledMapServiceLayer,ArcGISDynamicMapServiceLayer, FeatureLayer,ImageParameters,
         SimpleRenderer, 
+        IdentifyTask,IdentifyParameters,GeometryService,PrintTemplate,
         SimpleMarkerSymbol,SimpleLineSymbol,SimpleFillSymbol, 
-        GeometryService,
         Navigation, 
-        domConstruct,on,parser,arrayUtils,
         Color,
-        registry,Toolbar,Tooltip, Button,CheckBox,TOC,
-        dom,keys
+        registry,Toolbar,Tooltip, Button,CheckBox,TOC
+        
         ) {
         parser.parse();
+          
+         var sls = new SimpleLineSymbol("solid", new Color("#444444"), 3);
+          var sfs = new SimpleFillSymbol("solid", sls, new Color([68, 68, 68, 0.25]));
+
+          var popup = new Popup({
+            fillSymbol: sfs,
+            lineSymbol: null,
+            markerSymbol: null
+          }, domConstruct.create("div"));
 
 				  map = new Map("map", {
-					center: [115, 2],
-					zoom: 3,
+     
+					center: [115, 1],
+					zoom: 7,
+          basemap : "satellite",
           sliderPosition: "top-right",
-          sliderStyle: "large"
+          sliderStyle: "large",
+          infoWindow: popup
 				  });
-          var customBasemap = new ArcGISTiledMapServiceLayer(
-          "http://geoservices.big.go.id/arcgis/rest/services/RBI/Rupabumi/MapServer");
-          map.addLayer(customBasemap);
+          
+          //search
+          var geocoder = new Geocoder({
+            arcgisGeocoder: {
+              placeholder: "Search "
+            },
+            map: map
+          }, "search");
+
+          
+          //var customBasemap = new ArcGISTiledMapServiceLayer(
+          //"http://geoservices.big.go.id/arcgis/rest/services/RBI/Rupabumi/MapServer");  
+          //map.addLayer(customBasemap);
+          var imageParameters = new ImageParameters();
+          imageParameters.format = "jpeg";
+
+          //print
+          printer = new Print({
+          map: map,
+          url: "http://36.83.3.83:6080/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task"
+          }, dom.byId("printButton"));
+          printer.startup();
+
+
 
           //overview map
           var overviewMapDijit = new OverviewMap({
@@ -90,15 +134,6 @@
           overviewMapDijit.startup();
 
 
-          
-
-          //measurement
-          var sfs = new SimpleFillSymbol(
-          "solid",
-          new SimpleLineSymbol("solid", new Color([195, 176, 23]), 2), 
-          null
-           );
-          
 
           //      zoom
         var navToolbar;
@@ -161,7 +196,9 @@
           });*/
           var popupall = new PopupTemplate({
             title: "Provinsi Kalimantan Timur",
-            description: "{*}"  
+            description: "{*}"  ,
+            showAttachments: true
+
             
           });
           /*var popupws = new PopupTemplate({
@@ -196,6 +233,9 @@
           {
               mode: FeatureLayer.MODE_ONDEMAND
             });
+         // var rbi = new ArcGISTiledMapServiceLayer(
+         // "http://geoservices.big.go.id/arcgis/rest/services/RBI/Rupabumi/MapServer");  
+
           //layer tematik fisik
           var elevasi = new FeatureLayer("http://36.83.3.83:6080/arcgis/rest/services/view/Topografi/MapServer/0",
           {
@@ -237,6 +277,7 @@
 
           //Citra
            var citra = new ArcGISDynamicMapServiceLayer("http://36.83.3.83:6080/arcgis/rest/services/view/CitraSamboja2012/MapServer", {
+            "opacity" : 1,
           visible : false
           
             });
@@ -272,7 +313,7 @@
               infoTemplate: popupall,
               outFields: ["*"]
             });
-          var irigasi = new FeatureLayer("http://36.83.3.83:6080/arcgis/rest/services/view/BHGK/MapServer/4",
+          var irigasi = new FeatureLayer("http://36.83.3.83:6080/arcgis/rest/services/view/DaerahIrigasi/MapServer/0",
           {
               mode: FeatureLayer.MODE_ONDEMAND,
               visible : false,
@@ -311,12 +352,23 @@
             });
 
            //Layer Neraca Air
-           var debit = new FeatureLayer("http://36.83.3.83:6080/arcgis/rest/services/view/debitaliran/MapServer/0",
+           //popup debit
+           var _debitInfoTemplate = new InfoTemplate();
+              _debitInfoTemplate.setTitle("<b>Debit Aliran Per DAS</b>");
+            var _debitInfoContent =
+            "<div class=\"demographicInfoContent\">" +
+            "Luas DAS: ${sda.DBO.FCHDTAXDASNEWAR.Luas} m<br>Debit Aliran: ${sda.dbo.v_debitaliran.TRO} mm/bln<br>Debit Aliran: ${sda.dbo.v_debitaliran.TROd} m3/dtk" +
+            "</div>";
+
+            _debitInfoTemplate.setContent("${sda.DBO.FCHDTAXDASNEWAR.NAMA}<br>" +
+              _debitInfoContent);
+           var debit = new ArcGISDynamicMapServiceLayer("http://36.83.3.83:6080/arcgis/rest/services/view/debitaliran/MapServer",
           {
-              mode: FeatureLayer.MODE_ONDEMAND,
-              visible : false,
-              infoTemplate: popupall,
-              outFields: ["*"]
+              "opacity" : 1,
+            visible : false
+            });
+           debit.setInfoTemplates({
+              0: { infoTemplate: _debitInfoTemplate }
             });
            var chdas = new FeatureLayer("http://36.83.3.83:6080/arcgis/rest/services/view/curahhujan/MapServer/0",
           {
@@ -376,13 +428,80 @@
               infoTemplate: popupall,
               outFields: ["*"]
             });
+
+              // layer add service
+              //SIGI PU
+              /* var sigisda = new FeatureLayer("http://sigi.pu.go.id/ArcGIS/rest/services/sigi_sda/MapServer/0",
+          {
+              mode: FeatureLayer.MODE_ONDEMAND,
+              visible : false,
+              infoTemplate: popupall,
+              outFields: ["*"]
+            });*/
+           var sigisda = new ArcGISDynamicMapServiceLayer("http://sigi.pu.go.id/ArcGIS/rest/services/sigi_sda/MapServer", {
+            "opacity" : 1,
+            visible : false
+            });
+          
+           var deptan = new ArcGISDynamicMapServiceLayer("http://sig.deptan.go.id/ArcGIS/rest/services/01_Sawah/MapServer", {
+            "opacity" : 1,
+            visible : false
+            });
+
+
+
+
           map.addLayers([admin,
                          citra,
                          elevasi,sawah,ttp,jt,ws,cat,geo,
                          bendungan, bendung, bendali, pantai, irigasi, rawa, danau,
                          posarr,poshidro,
                          debit,chdas,
-                         banjir, genanganbpn, genanganbtg, genangansmrd, poibpn, poibtg, poismrd]);
+                         banjir, genanganbpn, genanganbtg, genangansmrd, poibpn, poibtg, poismrd,
+                         sigisda,deptan]);
+
+          //IDENTIFY
+         /* function mapReady () {
+          map.on("click", executeIdentifyTask);
+          //create identify tasks and setup parameters
+          identifyTask = new IdentifyTask(debit);
+
+          identifyParams = new IdentifyParameters();
+          identifyParams.tolerance = 3;
+          identifyParams.returnGeometry = true;
+          identifyParams.layerIds = [0];
+          identifyParams.layerOption = IdentifyParameters.LAYER_OPTION_ALL;
+          identifyParams.width = map.width;
+          identifyParams.height = map.height;
+        }
+          function executeIdentifyTask (event) {
+          identifyParams.geometry = event.mapPoint;
+          identifyParams.mapExtent = map.extent;
+
+            var deferred = identifyTask
+            .execute(identifyParams)
+            .addCallback(function (response) {
+              // response is an array of identify result objects
+              // Let's return an array of features.
+              return arrayUtils.map(response, function (result) {
+                var feature = result.feature;
+                var layerName = result.layerName;
+
+                feature.attributes.layerName = layerName;
+                if (layerName === 'Daerah Aliran Sungai') {
+                  var taxParcelTemplate = new InfoTemplate("*");
+                  feature.setInfoTemplate(taxParcelTemplate);
+                }
+                return feature;
+                });
+              });
+          map.infoWindow.setFeatures([deferred]);
+          map.infoWindow.show(event.mapPoint);
+          }
+          */
+
+
+          //SHow coordinates
 
           map.on("load", function() {
           //after map loads, connect to listen to mouse move & drag events
@@ -392,7 +511,7 @@
 
             function showCoordinates(evt) {
               //the map is in web mercator but display coordinates in geographic (lat, long)
-              var mp = webMercatorUtils.webMercatorToGeographic(evt.mapPoint);
+              var mp = evt.mapPoint;
               //display mouse coordinates
               dom.byId("info").innerHTML = mp.x.toFixed(3) + ", " + mp.y.toFixed(3);
             }
@@ -556,14 +675,44 @@
                     }
                   }
                   });
+                  //TOC Neraca Air
+           var toc5 = new TOC({
+                    map: map,
+                    layerInfos: [{
+                      layer: chdas,
+                      title: "Curah Hujan",
+                      collapsed : true
+                    },{
+                      layer: debit,
+                      title: "Debit Aliran",
+                      collapsed : true
+                    }]
+                  }, 'tocDiv5');
+                  toc.startup();
+                     
+                  //2014-04-04: added event
+                  toc.on('toc-node-checked', function(evt){
+                    if (console) {
+                    console.log("TOCNodeChecked, rootLayer:"
+                    +(evt.rootLayer?evt.rootLayer.id:'NULL')
+                    +", serviceLayer:"+(evt.serviceLayer?evt.serviceLayer.id:'NULL')
+                    + " Checked:"+evt.checked);
+                    if (evt.checked && evt.rootLayer && evt.serviceLayer){
+                      // evt.rootLayer.setVisibleLayers([evt.serviceLayer.id])
+                    }
+                  }
+                  
+                });
                  //TOC CItra
            var toc6 = new TOC({
                     map: map,
                     layerInfos: [{
                       layer: citra,
-                      title: "Citra Samboja 2012"
-                    }],style: 'inline',
-                    slider: true
+
+                      title: "Citra Samboja 2012",
+                      slider: true
+                    }]
+                    
                   }, 'tocDiv6');
                   toc.startup();
                      
@@ -579,6 +728,7 @@
                     }
                   }
                   });
+
                    //TOC Banjir
            var toc7 = new TOC({
                     map: map,
@@ -619,19 +769,22 @@
                     }
                   }
                   });
-                  //TOC Neraca Air
-           var toc5 = new TOC({
+                 
+          //TOC SIGI
+           var toc8 = new TOC({
                     map: map,
                     layerInfos: [{
-                      layer: chdas,
-                      title: "Curah Hujan",
-                      collapsed : true
+                      layer: sigisda,
+                      title: "Kementrian PU",
+                      subtitle: "Bidang SDA",
+                      collapsed: true
                     },{
-                      layer: debit,
-                      title: "Debit Aliran",
-                      collapsed : true
+                      layer: deptan,
+                      title: "Kementrian Pertanian",
+                      subtitle: "Sawah",
+                      collapsed: true
                     }]
-                  }, 'tocDiv5');
+                  }, 'tocDiv8');
                   toc.startup();
                      
                   //2014-04-04: added event
@@ -646,23 +799,10 @@
                     }
                   }
                   });
-                });
 
-          var snapManager = map.enableSnapping({
-          snapKey: keys.CTRL
-            });
-  
-
-            var measurement = new Measurement({
-              map: map
-            }, "measurementDiv");
-            measurement.startup();
-          });
-         
-        
 
           //add the basemap gallery, in this case we'll display maps from ArcGIS.com including bing maps
-          /*var basemapGallery = new BasemapGallery({
+          var basemapGallery = new BasemapGallery({
             showArcGISBasemaps: true,
             map: map
           }, "basemapGallery");
@@ -670,6 +810,33 @@
           
           basemapGallery.on("error", function(msg) {
             console.log("basemap gallery error:  ", msg);
-          });*/
-		
+          });
+    
+                 
+    });
+
+         
+
+          var snapManager = map.enableSnapping({
+          snapKey: has("mac") ? keys.META : keys.CTRL
+          });
+
+          var layerInfos = [{layer:[admin,
+                         citra,
+                         elevasi,sawah,ttp,jt,ws,cat,geo,
+                         bendungan, bendung, bendali, pantai, irigasi, rawa, danau,
+                         posarr,poshidro,
+                         debit,chdas,
+                         banjir, genanganbpn, genanganbtg, genangansmrd, poibpn, poibtg, poismrd]}];
+          snapManager.setLayerInfos(layerInfos);
+
+
+            var measurement = new Measurement({
+              map: map
+
+            }, "measurementDiv");
+            measurement.startup();
+          });
+     
+        
 

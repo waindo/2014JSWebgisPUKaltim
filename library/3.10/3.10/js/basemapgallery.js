@@ -26,7 +26,7 @@
       });
       basemaps.push(rbiBasemap);
 
-      var citra = new esri.dijit.BasemapLayer({
+      /*var citra = new esri.dijit.BasemapLayer({
         url:"http://static.arcgis.com/attribution/World_Imagery"
       });
       var citraBasemap = new esri.dijit.Basemap({
@@ -34,7 +34,7 @@
         title       :"Citra Satelit",
         thumbnailUrl:"images/citra.png"
       });
-      basemaps.push(citraBasemap);
+      basemaps.push(citraBasemap);*/
       
 
       var basemapGallery = new esri.dijit.BasemapGallery({
